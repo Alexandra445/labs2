@@ -2,9 +2,8 @@
 
 #include <stack.h>
 
-using namespace std;
+using namespace std; 
 
-// Точка входа в программу, где есть чтение и вывод чисел
 int main() {
     setlocale(LC_ALL, "RUS");
 
@@ -12,26 +11,23 @@ int main() {
     int number;
 
     cout << "Введите последовательность чисел (для завершения введите 0):" << endl;
-
-    // Чтение чисел, пока не встречен 0
+     
     while (true) {
         cout << "Введите число: ";
         cin >> number;
-
-        // Завершаем ввод, если число 0
+         
         if (number == 0) {
             break;
         }
 
-        stack.push(number);  // Добавляем число в стек
+        stack.push(number);  
     }
-
-    // Вывод положительных чисел в обратном порядке
+     
     cout << "Положительные числа в обратном порядке:" << endl;
     while (stack.count() > 0) {
         int value = stack.pop();
         if (value > 0) {
-            cout << value << " ";  // Выводим только положительные
+            cout << value << " ";  
         }
     }
     cout << endl;
