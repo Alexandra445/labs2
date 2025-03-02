@@ -18,25 +18,20 @@ private:
     {
         T data;
         Node* next;
-        Node(T val)
-            : data(val)
-            , next(nullptr)
-        {
-        }
     };
 
-    Node* top;
-    int capacity;
+    Node(T val, Node* nextNode) : data(val), next(nextNode)
+    {
+    }
+
+    Node* top = nullptr;
+    int size = 0;
 
 public:
     /// <summary>
-    /// Конструктор стека. Создает пустой стек.
+    /// Конструктор по умолчанию.
     /// </summary>
-    Stack()
-        : top(nullptr)
-        , capacity(0)
-    {
-    }
+    Stack() = default;
 
     /// <summary>
     /// Деструктор. Удаляет все элементы из стека.
@@ -51,10 +46,8 @@ public:
    /// </summary>
     void push(T value) 
     {
-        Node* newNode = new Node(value);
-        newNode->next = top;
-        top = newNode;
-        capacity++;
+        top = new Node(value, top);
+        size++;
     } 
 
    /// <summary>
@@ -71,7 +64,7 @@ public:
         top = top->next;
         T data = temp->data;
         delete temp;   
-        capacity--;
+        size--;
         return data;
     }
 
@@ -92,7 +85,7 @@ public:
     /// </summary>
     int count()
     {
-        return capacity;
+        return size;
     }
 
     /// <summary>
@@ -106,6 +99,6 @@ public:
             top = top->next;
             delete temp;
         }
-        capacity = 0; 
+        size = 0; 
     }
 };
