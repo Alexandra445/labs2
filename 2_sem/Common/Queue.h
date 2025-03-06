@@ -1,13 +1,19 @@
 #pragma once
 #include <iostream>
 
+using namespace std;
+
 template <typename T>
-class Queue {
+class Queue 
+{
 private:
-    struct Node {
+    struct Node 
+    {
         T data;
         Node* next;
-        Node(T value) : data(value), next(nullptr) {}
+        Node(T value) : data(value), next(nullptr) 
+        {
+        }
     };
 
     Node* front;
@@ -15,28 +21,36 @@ private:
     int size;
 
 public:
-    Queue() : front(nullptr), rear(nullptr), size(0) {}
+    Queue() : front(nullptr), rear(nullptr), size(0) 
+    {
+    }
 
-    void queue(T value) {
+    void queue(T value) 
+    {
         Node* newNode = new Node(value);
-        if (rear) {
+        if (rear) 
+        {
             rear->next = newNode;
         }
-        else {
+        else
+        {
             front = newNode;
         }
         rear = newNode;
         size++;
     }
 
-    T unqueue() {
-        if (!front) {
-            throw std::out_of_range("Queue is empty");
+    T unqueue() 
+    {
+        if (!front) 
+        {
+            throw out_of_range("Queue is empty");
         }
         Node* temp = front;
         T value = temp->data;
         front = front->next;
-        if (!front) {
+        if (!front) 
+        {
             rear = nullptr;
         }
         delete temp;
@@ -44,12 +58,15 @@ public:
         return value;
     }
 
-    int count() {
+    int count() 
+    {
         return size;
     }
 
-    void clear() {
-        while (front) {
+    void clear() 
+    {
+        while (front) 
+        {
             Node* temp = front;
             front = front->next;
             delete temp;
@@ -58,30 +75,38 @@ public:
         size = 0;
     }
 
-    bool isEmpty() {
+    bool isEmpty() 
+    {
         return size == 0;
     }
 
-    void print() {
+    void print()
+    {
         Node* temp = front;
-        while (temp) {
-            std::cout << temp->data << " ";
+        while (temp) 
+        {
+            cout << temp->data << " ";
             temp = temp->next;
         }
-        std::cout << std::endl;
+        cout << std::endl;
     }
 
-    void insertBeforeNegatives() {
+    void insertBeforeNegatives()
+    {
         Node* temp = front;
         Node* prev = nullptr;
 
-        while (temp) {
-            if (temp->data < 0) {
+        while (temp)
+        {
+            if (temp->data < 0) 
+            {
                 Node* newNode = new Node(1);
-                if (prev) {
+                if (prev) 
+                {
                     prev->next = newNode;
                 }
-                else {
+                else 
+                {
                     front = newNode;
                 }
                 newNode->next = temp;
@@ -93,8 +118,10 @@ public:
         }
     }
 
-    void removeNegatives() {
-        while (front && front->data < 0) {
+    void removeNegatives() 
+    {
+        while (front && front->data < 0) 
+        {
             Node* temp = front;
             front = front->next;
             delete temp;
@@ -102,27 +129,34 @@ public:
         }
 
         Node* temp = front;
-        while (temp && temp->next) {
-            if (temp->next->data < 0) {
+        while (temp && temp->next) 
+        {
+            if (temp->next->data < 0)
+            {
                 Node* delNode = temp->next;
                 temp->next = temp->next->next;
                 delete delNode;
                 size--;
             }
-            else {
+            else
+            {
                 temp = temp->next;
             }
         }
-        if (!front) {
+        if (!front) 
+        {
             rear = nullptr;
         }
     }
 
-    int countOccurrences(T value) {
+    int countOccurrences(T value) 
+    {
         int count = 0;
         Node* temp = front;
-        while (temp) {
-            if (temp->data == value) {
+        while (temp) 
+        {
+            if (temp->data == value)
+            {
                 count++;
             }
             temp = temp->next;
