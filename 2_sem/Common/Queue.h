@@ -58,7 +58,7 @@ public:
         return value;
     }
 
-    int count() 
+    int count() const 
     {
         return size;
     }
@@ -75,12 +75,12 @@ public:
         size = 0;
     }
 
-    bool isEmpty() 
+    bool isEmpty() const
     {
         return size == 0;
     }
 
-    void print()
+    void print() const
     {
         Node* temp = front;
         while (temp) 
@@ -149,7 +149,7 @@ public:
         }
     }
 
-    int countOccurrences(T value) 
+    int countOccurrences(T value) const
     {
         int count = 0;
         Node* temp = front;
