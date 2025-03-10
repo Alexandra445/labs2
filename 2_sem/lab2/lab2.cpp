@@ -3,7 +3,8 @@
 
 using namespace std;
 
-int main() {
+int main() 
+{
 
     setlocale(LC_ALL, "RUS");
 
@@ -13,18 +14,7 @@ int main() {
 
     do 
     {
-        cout << "\nМеню:\n";
-        cout << "1. Добавить элемент в очередь\n";
-        cout << "2. Извлечь элемент из очереди\n";
-        cout << "3. Показать количество элементов\n";
-        cout << "4. Очистить очередь\n";
-        cout << "5. Вставить 1 перед каждым отрицательным числом\n";
-        cout << "6. Удалить все отрицательные числа\n";
-        cout << "7. Подсчитать вхождения числа\n";
-        cout << "8. Вывести очередь\n";
-        cout << "9. Выйти\n";
-        cout << "Выберите действие: ";
-        cin >> choice;
+        choice = displayMenu();
 
         switch (choice) 
         {
@@ -39,7 +29,7 @@ int main() {
             {
                 cout << "Извлечено: " << q.unqueue() << endl;
             }
-            catch (const std::out_of_range& e)
+            catch (const out_of_range& e)
             {
                 cout << e.what() << endl;
             }
