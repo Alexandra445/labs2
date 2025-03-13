@@ -20,9 +20,51 @@ int displayMenu() {
     return choice;
 }
 
+template <typename T>
+void insertBeforeNegatives(Queue<T>& q) {
+    Queue<T> newQueue; 
+    while (!q.isEmpty()) {
+        T value = q.unqueue();
+        if (value < 0) {
+            newQueue.queue(1);
+        }
+        newQueue.queue(value);
+    }
+    while (!newQueue.isEmpty()) {
+        q.queue(newQueue.unqueue());
+    }
+    cout << "Вставлены 1 перед отрицательными числами.\n";
+}
+
+template <typename T>
+void removeNegatives(Queue<T>& q) {
+    Queue<T> newQueue; 
+    while (!q.isEmpty()) {
+        T value = q.unqueue();
+        if (value >= 0) {
+            newQueue.queue(value); 
+        }
+    }
+    while (!newQueue.isEmpty()) {
+        q.queue(newQueue.unqueue());
+    }
+    cout << "Удалены все отрицательные числа.\n";
+}
+
+template <typename T>
+int countOccurrences(const Queue<T>& q, T value) {
+    Queue<T> temp = q; 
+    int count = 0;
+    while (!temp.isEmpty()) {
+        if (temp.unqueue() == value) {
+            count++;
+        }
+    }
+    return count;
+}
+
 int main() 
 {
-
     setlocale(LC_ALL, "RUS");
 
     Queue<int> q;
@@ -62,19 +104,19 @@ int main()
             break;
 
         case 5:
-            q.insertBeforeNegatives();
+            insertBeforeNegatives(q);
             cout << "Вставлены 1 перед отрицательными числами.\n";
             break;
 
         case 6:
-            q.removeNegatives();
+            removeNegatives(q);
             cout << "Удалены все отрицательные числа.\n";
             break;
 
         case 7:
             cout << "Введите число для подсчета вхождений: ";
             cin >> value;
-            cout << "Число " << value << " встречается " << q.countOccurrences(value) << " раз.\n";
+            cout << "Число " << value << " встречается " << countOccurrences(q,value) << " раз.\n";
             break;
 
         case 8:
