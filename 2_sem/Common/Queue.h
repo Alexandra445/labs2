@@ -1,33 +1,41 @@
 #pragma once
 #include <iostream>
+#include "node.h"
 
 using namespace std;
 
+/// <summary>
+/// Очередь с использованием шаблонного класса и связного списка.
+/// </summary>
 template <typename T>
 class Queue 
 {
 private:
-    struct Node 
-    {
-        T data;
-        Node* next;
-        Node(T value) : data(value), next(nullptr) 
-        {
-        }
-    };
-
-    Node* front;
-    Node* rear;
-    int size;
+    Node<T>* front = nullptr;
+    Node<T>* rear = nullptr; 
+    int size = 0;
 
 public:
-    Queue() : front(nullptr), rear(nullptr), size(0) 
+    /// <summary>
+    /// Конструктор по умолчанию.
+    /// </summary>
+    Queue() = default;
+
+    /// <summary>
+    /// Деструктор для автоматического освобождения памяти.
+    /// </summary>
+    ~Queue()
     {
+        clear();
     }
 
+    /// <summary>
+    /// Добавляет новый элемент в конец очереди.
+    /// </summary>
+    /// <param name="value">Элемент, который нужно добавить.</param>
     void queue(T value) 
     {
-        Node* newNode = new Node(value);
+        Node<T>* newNode = new Node<T>(value);
         if (rear) 
         {
             rear->next = newNode;
@@ -40,6 +48,10 @@ public:
         size++;
     }
 
+    /// <summary>
+    /// Удаляет и возвращает элемент из начала очереди.
+    /// </summary>
+    /// <returns>Удалённое значение.</returns>
     T unqueue() 
     {
         if (!front) 
@@ -58,16 +70,23 @@ public:
         return value;
     }
 
+    /// <summary>
+    /// Возвращает текущее количество элементов в очереди.
+    /// </summary>
+    /// <returns>Количество элементов в очереди.</returns>
     int count() const 
     {
         return size;
     }
 
+    /// <summary>
+    /// Очищает очередь, удаляя все элементы.
+    /// </summary>
     void clear() 
     {
         while (front) 
         {
-            Node* temp = front;
+            Node<T>* temp = front;
             front = front->next;
             delete temp;
         }
@@ -75,32 +94,41 @@ public:
         size = 0;
     }
 
+    /// <summary>
+    /// Проверяет, является ли очередь пустой.
+    /// </summary>
     bool isEmpty() const
     {
         return size == 0;
     }
 
+    /// <summary>
+    /// Выводит все элементы очереди на стандартный поток вывода.
+    /// </summary>
     void print() const
     {
-        Node* temp = front;
+        Node<T>* temp = front;
         while (temp) 
         {
             cout << temp->data << " ";
             temp = temp->next;
         }
-        cout << std::endl;
+        cout << endl;
     }
 
+    /// <summary>
+    /// Вставляет элемент со значением 1 перед каждым отррицательным числом в очереди.
+    /// </summary>
     void insertBeforeNegatives()
     {
-        Node* temp = front;
-        Node* prev = nullptr;
+        Node<T>* temp = front;
+        Node<T>* prev = nullptr;
 
         while (temp)
         {
             if (temp->data < 0) 
             {
-                Node* newNode = new Node(1);
+                Node<T>* newNode = new Node<T>(1);
                 if (prev) 
                 {
                     prev->next = newNode;
@@ -118,22 +146,25 @@ public:
         }
     }
 
+    /// <summary>
+    /// Удаляет все отрицательные числа из очереди.
+    /// </summary>
     void removeNegatives() 
     {
         while (front && front->data < 0) 
         {
-            Node* temp = front;
+            Node<T>* temp = front;
             front = front->next;
             delete temp;
             size--;
         }
 
-        Node* temp = front;
+        Node<T>* temp = front;
         while (temp && temp->next) 
         {
             if (temp->next->data < 0)
             {
-                Node* delNode = temp->next;
+                Node<T>* delNode = temp->next;
                 temp->next = temp->next->next;
                 delete delNode;
                 size--;
@@ -149,10 +180,14 @@ public:
         }
     }
 
+    /// <summary>
+    /// Подсчитывает количество вхождений указанного значения в очереди.
+    /// </summary>
+    /// <param name="value">Значение для подсчёта.</param>
     int countOccurrences(T value) const
     {
         int count = 0;
-        Node* temp = front;
+        Node<T>* temp = front;
         while (temp) 
         {
             if (temp->data == value)
@@ -162,22 +197,5 @@ public:
             temp = temp->next;
         }
         return count;
-    }
-
-    int displayMenu() {
-        int choice;
-        cout << "\nМеню:\n";
-        cout << "1. Добавить элемент в очередь\n";
-        cout << "2. Извлечь элемент из очереди\n";
-        cout << "3. Показать количество элементов\n";
-        cout << "4. Очистить очередь\n";
-        cout << "5. Вставить 1 перед каждым отрицательным числом\n";
-        cout << "6. Удалить все отрицательные числа\n";
-        cout << "7. Подсчитать вхождения числа\n";
-        cout << "8. Вывести очередь\n";
-        cout << "9. Выйти\n";
-        cout << "Выберите действие: ";
-        cin >> choice;
-        return choice;
     }
 };

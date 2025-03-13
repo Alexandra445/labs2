@@ -24,7 +24,7 @@
     <ClInclude Include="stack.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Queue.h">
+    <ClInclude Include="queue.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
