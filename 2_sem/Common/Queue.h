@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include "node.h"
-
 using namespace std;
 
 /// <summary>
@@ -17,9 +16,11 @@ private:
 
 public:
     /// <summary>
-    ///  онструктор по умолчанию.
+    ///  онструктор по умолчанию  с использованием списка инициализации.
     /// </summary>
-    Queue() = default;
+    Queue() : front(nullptr), rear(nullptr), size(0) 
+    {
+    }
 
     /// <summary>
     /// ƒеструктор дл€ автоматического освобождени€ пам€ти.
@@ -84,14 +85,10 @@ public:
     /// </summary>
     void clear() 
     {
-        while (front) 
+        while (!isEmpty())
         {
-            Node<T>* temp = front;
-            front = front->next;
-            delete temp;
+            unqueue();
         }
-        rear = nullptr;
-        size = 0;
     }
 
     /// <summary>

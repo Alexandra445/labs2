@@ -3,7 +3,152 @@
 
 using namespace std;
 
-int displayMenu() {
+int displayMenu();
+
+template <typename T>
+void insertBeforeNegatives(Queue<T>& queue, bool (*isNegative)(const T&) = nullptr)
+{
+    Queue<T> newQueue;
+
+    while (!queue.isEmpty())
+    {
+        T value = queue.unqueue();
+
+        if (isNegative && isNegative(value))
+        {
+            newQueue.queue(static_cast<T>(1));
+        }
+        newQueue.queue(value);
+    }
+    while (!newQueue.isEmpty())
+    {
+        queue.queue(newQueue.unqueue());
+    }
+    cout << "Завершено добавление 1 перед \"отрицательными\" элементами.\n";
+}
+
+template <typename T>
+void removeNegatives(Queue<T>& queue, bool (*isNegative)(const T&) = nullptr)
+{
+    Queue<T> newQueue;
+
+    while (!queue.isEmpty())
+    {
+        T value = queue.unqueue();
+
+        if (isNegative) 
+        {
+            if (!isNegative(value)) 
+            {
+                newQueue.queue(value);
+            }
+        }
+        else
+        {
+            newQueue.queue(value);
+        }
+    }
+    while (!newQueue.isEmpty())
+    {
+        queue.queue(newQueue.unqueue());
+    }
+    cout << "Удалены все элементы, определяемые как \"отрицательные\".\n";
+
+}
+
+template <typename T>
+int countOccurrences(const Queue<T>& queue, T value)
+{
+    Queue<T> temp = queue;
+    int count = 0;
+    while (!temp.isEmpty())
+    {
+        if (temp.dequeue() == value) 
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+int main() 
+{
+    setlocale(LC_ALL, "RUS");
+
+    Queue<int> intQueue;;
+
+    int choice;
+
+    do 
+    {
+        choice = displayMenu();
+
+        switch (choice) 
+        {
+        case 1:
+            int value;
+            cout << "Введите число: ";
+            cin >> value;
+            intQueue.queue(value);
+            break;
+
+        case 2:
+            try 
+            {
+                cout << "Извлечено: " << intQueue.unqueue() << endl;
+            }
+            catch (const out_of_range& e)
+            {
+                cout << e.what() << endl;
+            }
+            break;
+
+        case 3:
+            cout << "Количество элементов: " << intQueue.count() << endl;
+            break;
+
+        case 4:
+            intQueue.clear();
+            cout << "Очередь очищена.\n";
+            break;
+
+        case 5:
+            insertBeforeNegatives(intQueue);
+            cout << "Вставлены 1 перед отрицательными числами.\n";
+            break;
+
+        case 6:
+            removeNegatives(intQueue);
+            cout << "Удалены все отрицательные числа.\n";
+            break;
+
+        case 7:
+            int value;
+            cout << "Введите число для подсчета вхождений: ";
+            cin >> value;
+            cout << "Число " << value << " встречается " << countOccurrences(intQueue,value) << " раз.\n";
+            break;
+
+        case 8:
+            cout << "Очередь: ";
+            intQueue.print();
+            break;
+
+        case 9:
+            cout << "Выход...\n";
+            break;
+
+        default:
+            cout << "Неверный выбор, попробуйте снова.\n";
+        }
+    }
+    while (choice != 9);
+
+    return 0;
+}
+
+int displayMenu()
+{
     int choice;
     cout << "\nМеню:\n";
     cout << "1. Добавить элемент в очередь\n";
@@ -18,121 +163,4 @@ int displayMenu() {
     cout << "Выберите действие: ";
     cin >> choice;
     return choice;
-}
-
-template <typename T>
-void insertBeforeNegatives(Queue<T>& q) {
-    Queue<T> newQueue; 
-    while (!q.isEmpty()) {
-        T value = q.unqueue();
-        if (value < 0) {
-            newQueue.queue(1);
-        }
-        newQueue.queue(value);
-    }
-    while (!newQueue.isEmpty()) {
-        q.queue(newQueue.unqueue());
-    }
-    cout << "Вставлены 1 перед отрицательными числами.\n";
-}
-
-template <typename T>
-void removeNegatives(Queue<T>& q) {
-    Queue<T> newQueue; 
-    while (!q.isEmpty()) {
-        T value = q.unqueue();
-        if (value >= 0) {
-            newQueue.queue(value); 
-        }
-    }
-    while (!newQueue.isEmpty()) {
-        q.queue(newQueue.unqueue());
-    }
-    cout << "Удалены все отрицательные числа.\n";
-}
-
-template <typename T>
-int countOccurrences(const Queue<T>& q, T value) {
-    Queue<T> temp = q; 
-    int count = 0;
-    while (!temp.isEmpty()) {
-        if (temp.unqueue() == value) {
-            count++;
-        }
-    }
-    return count;
-}
-
-int main() 
-{
-    setlocale(LC_ALL, "RUS");
-
-    Queue<int> q;
-
-    int choice, value;
-
-    do 
-    {
-        choice = displayMenu();
-
-        switch (choice) 
-        {
-        case 1:
-            cout << "Введите число: ";
-            cin >> value;
-            q.queue(value);
-            break;
-
-        case 2:
-            try 
-            {
-                cout << "Извлечено: " << q.unqueue() << endl;
-            }
-            catch (const out_of_range& e)
-            {
-                cout << e.what() << endl;
-            }
-            break;
-
-        case 3:
-            cout << "Количество элементов: " << q.count() << endl;
-            break;
-
-        case 4:
-            q.clear();
-            cout << "Очередь очищена.\n";
-            break;
-
-        case 5:
-            insertBeforeNegatives(q);
-            cout << "Вставлены 1 перед отрицательными числами.\n";
-            break;
-
-        case 6:
-            removeNegatives(q);
-            cout << "Удалены все отрицательные числа.\n";
-            break;
-
-        case 7:
-            cout << "Введите число для подсчета вхождений: ";
-            cin >> value;
-            cout << "Число " << value << " встречается " << countOccurrences(q,value) << " раз.\n";
-            break;
-
-        case 8:
-            cout << "Очередь: ";
-            q.print();
-            break;
-
-        case 9:
-            cout << "Выход...\n";
-            break;
-
-        default:
-            cout << "Неверный выбор, попробуйте снова.\n";
-        }
-    }
-    while (choice != 9);
-
-    return 0;
 }
