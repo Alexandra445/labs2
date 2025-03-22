@@ -1,4 +1,5 @@
 ﻿#include <iostream> 
+#include <type_traits>
 #include <queue.h>
 
 using namespace std;
@@ -6,68 +7,60 @@ using namespace std;
 int displayMenu();
 
 template <typename T>
-void insertBeforeNegatives(Queue<T>& queue, bool (*isNegative)(const T&) = nullptr)
+void insertBeforeNegatives(Queue<T>& queue, bool (*predicate)(const T&) = nullptr)
 {
-    Queue<T> newQueue;
+    static_assert(is_arithmetic<T>::value, "T must be an arithmetic type (e.g., int, double)");
 
-    while (!queue.isEmpty())
+    int originalSize = queue.count();  
+
+    for (int i = 0; i < originalSize; ++i)
     {
-        T value = queue.unqueue();
+        T value = queue.unqueue();  
 
-        if (isNegative && isNegative(value))
+        if (predicate && predicate(value))
         {
-            newQueue.queue(static_cast<T>(1));
+            queue.queue(T{ 1 });  
         }
-        newQueue.queue(value);
+        queue.queue(value);  
     }
-    while (!newQueue.isEmpty())
-    {
-        queue.queue(newQueue.unqueue());
-    }
-    cout << "Завершено добавление 1 перед \"отрицательными\" элементами.\n";
+
+    cout << "Завершено добавление 1 перед элементами, удовлетворяющими условию.\n";
 }
 
 template <typename T>
-void removeNegatives(Queue<T>& queue, bool (*isNegative)(const T&) = nullptr)
+void removeNegatives(Queue<T>& queue, bool (*predicate)(const T&) = nullptr)
 {
-    Queue<T> newQueue;
+    static_assert(is_arithmetic<T>::value, "T must be an arithmetic type (e.g., int, double)");
 
-    while (!queue.isEmpty())
+    int originalSize = queue.count(); 
+
+    for (int i = 0; i < originalSize; ++i)
     {
-        T value = queue.unqueue();
+        T value = queue.unqueue();  
 
-        if (isNegative) 
+        if (predicate && !predicate(value)) 
         {
-            if (!isNegative(value)) 
-            {
-                newQueue.queue(value);
-            }
-        }
-        else
-        {
-            newQueue.queue(value);
+            queue.queue(value);  
         }
     }
-    while (!newQueue.isEmpty())
-    {
-        queue.queue(newQueue.unqueue());
-    }
-    cout << "Удалены все элементы, определяемые как \"отрицательные\".\n";
 
+    cout << "Удалены все элементы, удовлетворяющие условию.\n";
 }
 
 template <typename T>
 int countOccurrences(const Queue<T>& queue, T value)
 {
-    Queue<T> temp = queue;
+    Queue<T> temp = queue;  
     int count = 0;
+
     while (!temp.isEmpty())
     {
-        if (temp.dequeue() == value) 
+        if (temp.unqueue() == value)  
         {
             count++;
         }
     }
+
     return count;
 }
 
@@ -78,6 +71,7 @@ int main()
     Queue<int> intQueue;;
 
     int choice;
+    int value;
 
     do 
     {
@@ -121,19 +115,15 @@ int main()
             removeNegatives(intQueue);
             cout << "Удалены все отрицательные числа.\n";
             break;
-
         case 7:
-            int value;
             cout << "Введите число для подсчета вхождений: ";
             cin >> value;
-            cout << "Число " << value << " встречается " << countOccurrences(intQueue,value) << " раз.\n";
+            cout << "Число " << value << " встречается " << countOccurrences(intQueue, value) << " раз.\n";
             break;
-
         case 8:
             cout << "Очередь: ";
             intQueue.print();
             break;
-
         case 9:
             cout << "Выход...\n";
             break;

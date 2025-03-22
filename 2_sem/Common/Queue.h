@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <iostream>
 #include "node.h"
+
 using namespace std;
 
 /// <summary>
@@ -20,6 +20,37 @@ public:
     /// </summary>
     Queue() : front(nullptr), rear(nullptr), size(0) 
     {
+    }
+
+    /// <summary>
+    // Конструктор копирования
+    /// </summary>
+    Queue(const Queue& other)
+    {
+        Node<T>* temp = other.front;
+        while (temp)
+        {
+            queue(temp->data);  
+            temp = temp->next;
+        }
+    }
+
+    /// <summary>
+    // Оператор присваивания
+    /// </summary>
+    Queue& operator=(const Queue& other)
+    {
+        if (this != &other)  
+        {
+            clear();  
+            Node<T>* temp = other.front;
+            while (temp)
+            {
+                queue(temp->data); 
+                temp = temp->next;
+            }
+        }
+        return *this;
     }
 
     /// <summary>
@@ -55,14 +86,14 @@ public:
     /// <returns>Удалённое значение.</returns>
     T unqueue() 
     {
-        if (!front) 
+        if (!front)
         {
             throw out_of_range("Queue is empty");
         }
-        Node* temp = front;
+        Node<T>* temp = front; 
         T value = temp->data;
         front = front->next;
-        if (!front) 
+        if (!front)
         {
             rear = nullptr;
         }
