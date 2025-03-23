@@ -15,43 +15,21 @@ private:
     int size = 0;
 
 public:
-    /// <summary>
-    /// Конструктор по умолчанию  с использованием списка инициализации.
-    /// </summary>
-    Queue() : front(nullptr), rear(nullptr), size(0) 
-    {
-    }
 
     /// <summary>
-    // Конструктор копирования
+    // Конструктор по умолчанию
     /// </summary>
-    Queue(const Queue& other)
-    {
-        Node<T>* temp = other.front;
-        while (temp)
-        {
-            queue(temp->data);  
-            temp = temp->next;
-        }
-    }
+    Queue() = default;
 
     /// <summary>
-    // Оператор присваивания
+    // Конструктор копирования удаляем
     /// </summary>
-    Queue& operator=(const Queue& other)
-    {
-        if (this != &other)  
-        {
-            clear();  
-            Node<T>* temp = other.front;
-            while (temp)
-            {
-                queue(temp->data); 
-                temp = temp->next;
-            }
-        }
-        return *this;
-    }
+    Queue(const Queue& other) = delete;
+
+    /// <summary>
+    // Оператор присваивания удаляем
+    /// </summary>
+    Queue& operator=(const Queue& other) = delete;
 
     /// <summary>
     /// Деструктор для автоматического освобождения памяти.
@@ -128,19 +106,5 @@ public:
     bool isEmpty() const
     {
         return size == 0;
-    }
-
-    /// <summary>
-    /// Выводит все элементы очереди на стандартный поток вывода.
-    /// </summary>
-    void print() const
-    {
-        Node<T>* temp = front;
-        while (temp) 
-        {
-            cout << temp->data << " ";
-            temp = temp->next;
-        }
-        cout << endl;
     }
 };

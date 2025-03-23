@@ -1,67 +1,72 @@
 ﻿#include <iostream> 
-#include <type_traits>
 #include <queue.h>
 
-using namespace std;
+using namespace std; 
 
 int displayMenu();
 
-template <typename T>
-void insertBeforeNegatives(Queue<T>& queue, bool (*predicate)(const T&) = nullptr)
+template <typename T, typename Predicate>
+void insertBeforeIf(Queue<T>& queue, T valueToInsert, Predicate predicate)
 {
-    static_assert(is_arithmetic<T>::value, "T must be an arithmetic type (e.g., int, double)");
-
-    int originalSize = queue.count();  
+    int originalSize = queue.count();
 
     for (int i = 0; i < originalSize; ++i)
     {
-        T value = queue.unqueue();  
+        T value = queue.unqueue();
 
-        if (predicate && predicate(value))
+        if (predicate (value))
         {
-            queue.queue(T{ 1 });  
+            queue.queue(valueToInsert);
         }
-        queue.queue(value);  
+        queue.queue(value);
     }
-
-    cout << "Завершено добавление 1 перед элементами, удовлетворяющими условию.\n";
 }
 
-template <typename T>
-void removeNegatives(Queue<T>& queue, bool (*predicate)(const T&) = nullptr)
+template <typename T, typename Predicate>
+void removeIf(Queue<T>& queue, Predicate predicate)
 {
-    static_assert(is_arithmetic<T>::value, "T must be an arithmetic type (e.g., int, double)");
-
-    int originalSize = queue.count(); 
+    int originalSize = queue.count();
 
     for (int i = 0; i < originalSize; ++i)
     {
-        T value = queue.unqueue();  
+        T value = queue.unqueue();
 
-        if (predicate && !predicate(value)) 
+        if (predicate(value))
         {
-            queue.queue(value);  
+            queue.queue(value);
         }
     }
-
-    cout << "Удалены все элементы, удовлетворяющие условию.\n";
 }
 
 template <typename T>
 int countOccurrences(const Queue<T>& queue, T value)
 {
-    Queue<T> temp = queue;  
     int count = 0;
+    int originalSize = queue.count();
 
-    while (!temp.isEmpty())
+    for (int i = 0; i < originalSize; ++i)
     {
-        if (temp.unqueue() == value)  
+        T currentValue = queue.unqueue();
+
+        if (currentValue == value)
         {
             count++;
         }
-    }
 
-    return count;
+        queue.queue(currentValue);
+        return count;
+    }
+}
+
+template <typename T>
+void printQueue(const Queue<T>& queue)
+{
+    Queue<T> temp = queue;
+    while (!temp.isEmpty())
+    {
+        cout << temp.unqueue() << " ";
+    }
+    cout << endl;
 }
 
 int main() 
@@ -80,12 +85,13 @@ int main()
         switch (choice) 
         {
         case 1:
+        {
             int value;
             cout << "Введите число: ";
             cin >> value;
             intQueue.queue(value);
-            break;
-
+        }
+        break;
         case 2:
             try 
             {
@@ -107,14 +113,22 @@ int main()
             break;
 
         case 5:
-            insertBeforeNegatives(intQueue);
-            cout << "Вставлены 1 перед отрицательными числами.\n";
-            break;
+        {
+            int valueToInsert;
+            cout << "Введите значение, которое нужно вставить: ";
+            cin >> valueToInsert;
 
+            insertBeforeIf(intQueue, valueToInsert, [](const int& val) { return val < 0; });
+
+            cout << "Вставлены " << valueToInsert << " перед элементами, удовлетворяющими условию.\n";
+        }
+        break;
         case 6:
-            removeNegatives(intQueue);
-            cout << "Удалены все отрицательные числа.\n";
-            break;
+        {
+            removeIf(intQueue, [](const int& val) { return val < 0; });
+            cout << "Удалены все элементы, удовлетворяющие условию.\n";
+        }
+        break;
         case 7:
             cout << "Введите число для подсчета вхождений: ";
             cin >> value;
@@ -122,7 +136,7 @@ int main()
             break;
         case 8:
             cout << "Очередь: ";
-            intQueue.print();
+            printQueue(intQueue);
             break;
         case 9:
             cout << "Выход...\n";
