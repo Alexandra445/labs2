@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <stdexcept>
+#include "node.h"
 
 using namespace std;
 
@@ -12,17 +13,6 @@ template <typename T>
 class Stack
 {
 private:
-    /// <summary>
-    /// Элемент стека, который хранит данные и ссылку на следующий элемент.
-    /// </summary>
-    struct Node
-    {
-        Node(T val, Node* nextNode) : data(val), next(nextNode) {}
-
-        T data;
-        Node* next;
-    };
-
     Node* top = nullptr;
     int size = 0;
 
@@ -45,7 +35,7 @@ public:
     /// </summary>
     void push(T value)
     {
-        top = new Node(value, top);
+        top = new Node<T>(value, top);
         size++;
     }
 
@@ -59,7 +49,7 @@ public:
         {
             throw runtime_error("Stack is empty!");
         }
-        Node* temp = top;
+        Node<T>* temp = top;
         top = top->next;
         T data = temp->data;
         delete temp;
@@ -94,7 +84,7 @@ public:
     {
         while (top != nullptr)
         {
-            Node* temp = top;
+            Node<T>* temp = top;
             top = top->next;
             delete temp;
         }

@@ -17,11 +17,6 @@ private:
 public:
 
     /// <summary>
-    // Конструктор по умолчанию
-    /// </summary>
-    Queue() = default;
-
-    /// <summary>
     // Конструктор копирования удаляем
     /// </summary>
     Queue(const Queue& other) = delete;

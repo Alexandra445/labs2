@@ -14,7 +14,7 @@ void insertBeforeIf(Queue<T>& queue, T valueToInsert, Predicate predicate)
     {
         T value = queue.unqueue();
 
-        if (predicate (value))
+        if (predicate(value))
         {
             queue.queue(valueToInsert);
         }
@@ -42,20 +42,17 @@ template <typename T>
 int countOccurrences(const Queue<T>& queue, T value)
 {
     int count = 0;
-    int originalSize = queue.count();
+    Queue<T> tempQueue = queue;
 
-    for (int i = 0; i < originalSize; ++i)
+    while (!tempQueue.isEmpty())
     {
-        T currentValue = queue.unqueue();
-
+        T currentValue = tempQueue.unqueue(); 
         if (currentValue == value)
         {
             count++;
         }
-
-        queue.queue(currentValue);
-        return count;
     }
+    return count;
 }
 
 template <typename T>
