@@ -13,7 +13,7 @@ template <typename T>
 class Stack
 {
 private:
-    Node* top = nullptr;
+    Node<T>* top = nullptr;
     int size = 0;
 
 public:
