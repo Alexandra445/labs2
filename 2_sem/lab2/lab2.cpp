@@ -56,12 +56,14 @@ int countOccurrences(const Queue<T>& queue, T value)
 }
 
 template <typename T>
-void printQueue(const Queue<T>& queue)
+void printQueue(Queue<T>& queue)
 {
-    Queue<T> temp = queue;
-    while (!temp.isEmpty())
+    int originalSize = queue.count();
+    for (int i = 0; i < originalSize; ++i)
     {
-        cout << temp.unqueue() << " ";
+        T value = queue.unqueue();
+        cout << value << " ";
+        queue.queue(value);
     }
     cout << endl;
 }
@@ -70,7 +72,7 @@ int main()
 {
     setlocale(LC_ALL, "RUS");
 
-    Queue<int> intQueue;;
+    Queue<int> intQueue;
 
     int choice;
     int value;

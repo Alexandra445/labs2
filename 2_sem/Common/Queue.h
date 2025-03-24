@@ -15,6 +15,10 @@ private:
     int size = 0;
 
 public:
+    /// <summary>
+   // Конструктор по умолчанию
+   /// </summary>
+    Queue() = default;
 
     /// <summary>
     // Конструктор копирования удаляем
