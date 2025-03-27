@@ -27,7 +27,7 @@
     <ClInclude Include="node.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\queue.h">
+    <ClInclude Include="queue.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
