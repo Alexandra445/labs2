@@ -56,7 +56,7 @@ int countOccurrences(Queue<T>& queue, T value)
     return count;
 }
 
-template <typename T>
+ template <typename T>
 void printQueue(Queue<T>& queue)
 {
     int originalSize = queue.count();
