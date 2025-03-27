@@ -16,7 +16,7 @@ private:
 
 public:
     /// <summary>
-   // Конструктор по умолчанию
+    // Конструктор по умолчанию
     /// </summary>
     Queue() = default;
 
