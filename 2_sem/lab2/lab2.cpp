@@ -39,18 +39,19 @@ void removeIf(Queue<T>& queue, Predicate predicate)
 }
 
 template <typename T>
-int countOccurrences(const Queue<T>& queue, T value)
+int countOccurrences(Queue<T>& queue, T value) 
 {
     int count = 0;
-    Queue<T> tempQueue = queue;
+    int originalSize = queue.count();
 
-    while (!tempQueue.isEmpty())
+    for (int i = 0; i < originalSize; ++i)
     {
-        T currentValue = tempQueue.unqueue(); 
+        T currentValue = queue.unqueue();
         if (currentValue == value)
         {
             count++;
         }
+        queue.queue(currentValue); 
     }
     return count;
 }
