@@ -1,20 +1,115 @@
-﻿// lab3.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
+﻿#include <iostream>
+#include "cyclelist.h"
 
-#include <iostream>
+using namespace std;
 
-int main()
+void insertBeforeNegatives(CycleList<int>& list) 
 {
-    std::cout << "Hello World!\n";
+    for (int i = 0; i < list.count(); i++)
+    {
+        if (list[i] < 0) 
+        {
+            list.insert(i, 1);
+            i++;
+        }
+    }
+    cout << "Готово!\n";
 }
 
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
+void removeNegatives(CycleList<int>& list) 
+{
+    for (int i = 0; i < list.count();)
+    {
+        if (list[i] < 0) 
+        {
+            list.removeAt(i);
+        }
+        else 
+        {
+            i++;
+        }
+    }
+    cout << "Минусы удалены!\n";
+}
 
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
+void Menu()
+{
+    cout << "\nМеню:\n";
+    cout << "1. Добавить число\n";
+    cout << "2. Вставить число по индексу\n";
+    cout << "3. Удалить по индексу\n";
+    cout << "4. Показать число по индексу\n";
+    cout << "5. Количество чисел\n";
+    cout << "6. Сколько раз встречается число\n";
+    cout << "7. Очистить список\n";
+    cout << "8. Вставить 1 перед минусами\n";
+    cout << "9. Удалить все минусы\n";
+    cout << "0. Выход\n";
+    cout << "Выбери: ";
+}
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    CycleList<int> list;
+    int choice, value, index;
+
+    while (true) {
+        Menu();
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            cout << "Введи число: ";
+            cin >> value;
+            list.add(value);
+            break;
+
+        case 2:
+            cout << "Введи индекс и число: ";
+            cin >> index >> value;
+            list.insert(index, value);
+            break;
+
+        case 3:
+            cout << "Введи индекс: ";
+            cin >> index;
+            list.removeAt(index);
+            break;
+
+        case 4:
+            cout << "Введи индекс: ";
+            cin >> index;
+            cout << "Число: " << list[index] << endl;
+            break;
+
+        case 5:
+            cout << "Всего чисел: " << list.count() << endl;
+            break;
+
+        case 6:
+            cout << "Какое число искать? ";
+            cin >> value;
+            cout << "Найдено: " << list.count(value) << endl;
+            break;
+
+        case 7:
+            list.clear();
+            cout << "Список очищен\n";
+            break;
+
+        case 8:
+            insertBeforeNegatives(list);
+            break;
+
+        case 9:
+            removeNegatives(list);
+            break;
+
+        case 0:
+            return 0;
+
+        default:
+            cout << "Нет такого пункта!\n";
+        }
+    }
+}
