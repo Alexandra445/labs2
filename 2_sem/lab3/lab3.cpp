@@ -13,7 +13,7 @@ void insertBeforeNegatives(CycleList<int>& list)
             i++;
         }
     }
-    cout << "Готово!\n";
+    cout << "Готово!" << endl;
 }
 
 void removeNegatives(CycleList<int>& list) 
@@ -29,12 +29,12 @@ void removeNegatives(CycleList<int>& list)
             i++;
         }
     }
-    cout << "Минусы удалены!\n";
+    cout << "Минусы удалены!" << endl;
 }
 
 void Menu()
 {
-    cout << "\nМеню:\n";
+    cout << "Меню:" << endl;
     cout << "1. Добавить число\n";
     cout << "2. Вставить число по индексу\n";
     cout << "3. Удалить по индексу\n";
@@ -48,16 +48,19 @@ void Menu()
     cout << "Выбери: ";
 }
 
-int main() {
+int main() 
+{
     setlocale(LC_ALL, "Russian");
     CycleList<int> list;
     int choice, value, index;
 
-    while (true) {
+    while (true)
+    {
         Menu();
         cin >> choice;
 
-        switch (choice) {
+        switch (choice) 
+        {
         case 1:
             cout << "Введи число: ";
             cin >> value;
@@ -94,7 +97,7 @@ int main() {
 
         case 7:
             list.clear();
-            cout << "Список очищен\n";
+            cout << "Список очищен";
             break;
 
         case 8:
@@ -109,7 +112,7 @@ int main() {
             return 0;
 
         default:
-            cout << "Нет такого пункта!\n";
+            cout << "Нет такого пункта";
         }
     }
 }
