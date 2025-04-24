@@ -1,4 +1,5 @@
-﻿#include "node.h"
+﻿#pragma once
+#include "node.h"
 #include <stdexcept>
 
 /// <summary>
