@@ -5,31 +5,87 @@ using namespace std;
 
 void insertBeforeNegatives(CycleList<int>& list) 
 {
-    for (int i = 0; i < list.count(); i++)
+    if (list.count() == 0) return;
+
+    Node<int>* current = list.head();
+    Node<int>* prev = nullptr;
+    int originalSize = list.count();
+
+    Node<int>* tail = list.head();
+    for (int i = 0; i < originalSize - 1; i++) 
     {
-        if (list[i] < 0) 
-        {
-            list.insert(i, 1);
-            i++;
-        }
+        tail = tail->next;
     }
-    cout << "Готово!" << endl;
+
+    prev = tail;
+    int processed = 0;
+
+    while (processed < originalSize)
+    {
+        if (current->data < 0) 
+        {
+            Node<int>* newNode = new Node<int>(1, current);
+            prev->next = newNode;
+            if (prev == tail) 
+            {
+                tail = newNode;
+            }
+            prev = newNode;
+            list.insert(0, 0); 
+            list.removeAt(0);
+            processed++;
+        }
+        else
+        {
+            prev = current;
+            current = current->next;
+        }
+        processed++;
+    }
 }
 
-void removeNegatives(CycleList<int>& list) 
+void removeNegatives(CycleList<int>& list)
 {
-    for (int i = 0; i < list.count();)
+    if (list.count() == 0) return;
+
+    Node<int>* current = list.head();
+    Node<int>* prev = nullptr;
+    int originalSize = list.count();
+
+    // Находим хвост
+    Node<int>* tail = list.head();
+    for (int i = 0; i < originalSize - 1; i++) 
     {
-        if (list[i] < 0) 
-        {
-            list.removeAt(i);
-        }
-        else 
-        {
-            i++;
-        }
+        tail = tail->next;
     }
-    cout << "Минусы удалены!" << endl;
+
+    prev = tail;
+    int processed = 0;
+
+    while (processed < originalSize)
+    {
+        if (current->data < 0) 
+        {
+            Node<int>* toDelete = current;
+            prev->next = current->next;
+            current = current->next;
+
+            if (toDelete == tail)
+            {
+                tail = prev;
+            }
+
+            delete toDelete;
+            list.insert(0, 0); 
+            list.removeAt(0); 
+        }
+        else
+        {
+            prev = current;
+            current = current->next;
+        }
+        processed++;
+    }
 }
 
 void Menu()

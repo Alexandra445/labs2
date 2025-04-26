@@ -14,6 +14,28 @@ private:
     Node<T>* tail;
     int size;
 
+   /// <summary>
+   /// Возвращает указатель на головной узел циклического списка.
+   /// </summary>
+    Node<T>* head() const
+    {
+        return tail ? tail->next : nullptr;
+    }
+
+   /// <summary>
+   /// Возвращает узел списка по указанному индексу.
+   /// </summary>  
+    Node<T>* getNode(int index) const
+    {
+        if (index < 0 || index >= size) throw std::out_of_range("Index out of range");
+        Node<T>* current = head();
+        for (int i = 0; i < index; i++)
+        {
+            current = current->next;
+        }
+        return current;
+    }
+
 public:
     /// <summary>
     /// Конструктор по умолчанию. Создает пустой список.
@@ -31,28 +53,20 @@ public:
     }
 
     /// <summary>
-    /// Геттер для головы.
-    /// </summary>
-    Node<T>* head() const  
-    {
-        return tail ? tail->next : nullptr;
-    }
-
-    /// <summary>
     /// Добавляет элемент в конец списка.
     /// </summary>
     /// <param name="value">Значение для добавления.</param>
-    void add(T value) 
+    void add(T value)
     {
         Node<T>* newNode = new Node<T>(value);
         if (size == 0)
         {
             tail = newNode;
-            tail->next = tail; 
+            tail->next = tail;
         }
         else
         {
-            newNode->next = tail->next; 
+            newNode->next = tail->next;
             tail->next = newNode;
             tail = newNode;
         }
@@ -64,42 +78,20 @@ public:
     /// </summary>
     /// <param name="index">Индекс позиции для вставки (начиная с 0).</param>
     /// <param name="value">Значение для вставки.</param>
-    void insert(int index, T value) 
+    void insert(int index, T value)
     {
-        if (index < 0 || index > size) 
+        if (index < 0 || index > size) throw std::out_of_range("Index out of range");
+
+        if (index == 0 || index == size)
         {
-            throw std::out_of_range("Index out of range");
+            add(value);
+            return;
         }
 
-        if (index == 0)
-        {
-            Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
-            if (size == 0) 
-            {
-                tail = newNode;
-                tail->next = tail;
-            }
-            else
-            {
-                tail->next = newNode;
-            }
-            size++;
-        }
-        else if (index == size)
-        {
-            add(value); 
-        }
-        else
-        {
-            Node<T>* current = tail->next; 
-            for (int i = 0; i < index - 1; i++)
-            {
-                current = current->next; 
-            }
-            Node<T>* newNode = new Node<T>(value, current->next);
-            current->next = newNode; 
-            size++;
-        }
+        Node<T>* prev = getNode(index - 1);
+        prev->next = new Node<T>(value, prev->next);
+        size++;
+
     }
 
     /// <summary>
@@ -108,15 +100,12 @@ public:
     /// <param name="index">Индекс позиции для удаления (начиная с 0).</param>
     void removeAt(int index)
     {
-        if (index < 0 || index >= size)
-        {
-            throw std::out_of_range("Index out of range");
-        }
+        if (index < 0 || index >= size) throw std::out_of_range("Index out of range");
 
         if (index == 0)
         {
-            Node<T>* temp = tail->next; 
-            if (size == 1) 
+            Node<T>* temp = tail->next;
+            if (size == 1)
             {
                 tail = nullptr;
             }
@@ -128,16 +117,12 @@ public:
         }
         else
         {
-            Node<T>* current = tail->next; 
-            for (int i = 0; i < index - 1; i++)
+            Node<T>* prev = getNode(index - 1);
+            Node<T>* temp = prev->next;
+            prev->next = temp->next;
+            if (index == size - 1)
             {
-                current = current->next; 
-            }
-            Node<T>* temp = current->next; 
-            current->next = temp->next;    
-            if (index == size - 1)         
-            {
-                tail = current; 
+                tail = prev;
             }
             delete temp;
         }
@@ -151,27 +136,14 @@ public:
     /// <returns>Ссылка на элемент по указанному индексу.</returns>
     T& operator[](const int index)
     {
-        if (size == 0)
-        {
-            throw std::out_of_range("List is empty");
-        }
-
-        int normalizedIndex = ((index % size) + size) % size;
-
-        Node<T>* current = tail->next;
-        for (int i = 0; i < normalizedIndex; i++)
-        {
-            current = current->next;
-        }
-
-        return current->data;
+        return getNode(index)->data;
     }
 
     /// <summary>
     /// Возвращает количество элементов в списке.
     /// </summary>
     /// <returns>Число элементов в списке.</returns>
-    int count()
+    int count() const
     {
         return size;
     }
@@ -181,23 +153,19 @@ public:
     /// </summary>
     /// <param name="value">Значение для поиска.</param>
     /// <returns>Количество найденных вхождений.</returns>
-    int count(T value)
+    int count(T value) const
     {
-        int cnt = 0;
         if (size == 0) return 0;
-
+        int count = 0;
         Node<T>* current = head();
         for (int i = 0; i < size; i++)
         {
-            if (current->data == value)
-            {
-                cnt++;
-            }
+            if (current->data == value) cnt++;
             current = current->next;
         }
-        return cnt;
+        return count;
     }
-
+   
     /// <summary>
     /// Удаляет все элементы из списка.
     /// </summary>
