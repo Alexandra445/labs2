@@ -51,8 +51,6 @@ private:
         return current;
     }
 
-   
-
 public:
     /// <summary>
     /// Конструктор по умолчанию. Создает пустой список.
