@@ -15,25 +15,32 @@ private:
     int size;
 
    /// <summary>
-   /// Возвращает указатель на головной узел циклического списка.
-   /// </summary>
-    Node<T>* head() const
-    {
-        return tail ? tail->next : nullptr;
-    }
-
-   /// <summary>
    /// Возвращает узел списка по указанному индексу.
    /// </summary>  
-    Node<T>* getNode(int index) const
+    Node<T>* getNode(int index) const 
     {
         if (index < 0 || index >= size) throw std::out_of_range("Index out of range");
-        Node<T>* current = head();
-        for (int i = 0; i < index; i++)
+
+        if (index == 0) return tail->next;
+        if (index == size - 1) return tail;
+        if (index <= size / 2) 
         {
-            current = current->next;
+            Node<T>* current = tail->next; 
+            for (int i = 0; i < index; ++i)
+            {
+                current = current->next;
+            }
+            return current;
         }
-        return current;
+        else
+        {
+            Node<T>* current = tail;
+            for (int i = size - 1; i > index; --i)
+            {
+                current = current->next;
+            }
+            return current;
+        }
     }
 
 public:
@@ -50,6 +57,14 @@ public:
     ~CycleList()
     {
         clear();
+    }
+
+    /// <summary>
+   /// Возвращает указатель на головной узел циклического списка.
+   /// </summary>
+    Node<T>* head() const 
+    {
+        return tail ? tail->next : nullptr;
     }
 
     /// <summary>
@@ -78,11 +93,28 @@ public:
     /// </summary>
     /// <param name="index">Индекс позиции для вставки (начиная с 0).</param>
     /// <param name="value">Значение для вставки.</param>
-    void insert(int index, T value)
+    void insert(int index, T value) 
     {
         if (index < 0 || index > size) throw std::out_of_range("Index out of range");
 
-        if (index == 0 || index == size)
+        if (index == 0)
+        {
+            Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
+            if (!tail) 
+            {
+                tail = newNode;
+                tail->next = tail;
+            }
+            else
+            {
+                newNode->next = tail->next;
+                tail->next = newNode;
+            }
+            size++;
+            return;
+        }
+
+        if (index == size) 
         {
             add(value);
             return;
@@ -91,7 +123,6 @@ public:
         Node<T>* prev = getNode(index - 1);
         prev->next = new Node<T>(value, prev->next);
         size++;
-
     }
 
     /// <summary>
@@ -102,7 +133,7 @@ public:
     {
         if (index < 0 || index >= size) throw std::out_of_range("Index out of range");
 
-        if (index == 0)
+        if (index == 0) 
         {
             Node<T>* temp = tail->next;
             if (size == 1)
@@ -160,7 +191,7 @@ public:
         Node<T>* current = head();
         for (int i = 0; i < size; i++)
         {
-            if (current->data == value) cnt++;
+            if (current->data == value) count++;
             current = current->next;
         }
         return count;
@@ -169,6 +200,7 @@ public:
     /// <summary>
     /// Удаляет все элементы из списка.
     /// </summary>
+    //
     void clear() 
     {
         while (size > 0)
