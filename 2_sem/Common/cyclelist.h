@@ -19,29 +19,17 @@ private:
    /// </summary>  
     Node<T>* getNode(int index) const 
     {
-        if (index < 0 || index >= size) throw std::out_of_range("Index out of range");
+        if (index < 0 || index >= size)
+            throw std::out_of_range("Index out of range");
 
-        if (index == 0) return tail->next;
-        if (index == size - 1) return tail;
-        if (index <= size / 2) 
+        Node<T>* current = tail->next;
+        for (int i = 0; i < index; ++i) 
         {
-            Node<T>* current = tail->next; 
-            for (int i = 0; i < index; ++i)
-            {
-                current = current->next;
-            }
-            return current;
+            current = current->next;
         }
-        else
-        {
-            Node<T>* current = tail;
-            for (int i = size - 1; i > index; --i)
-            {
-                current = current->next;
-            }
-            return current;
-        }
+        return current;
     }
+   
 
 public:
     /// <summary>
@@ -79,7 +67,7 @@ public:
             tail = newNode;
             tail->next = tail;
         }
-        else
+        else 
         {
             newNode->next = tail->next;
             tail->next = newNode;
@@ -95,12 +83,13 @@ public:
     /// <param name="value">Значение для вставки.</param>
     void insert(int index, T value) 
     {
-        if (index < 0 || index > size) throw std::out_of_range("Index out of range");
+        if (index < 0 || index > size)
+            throw std::out_of_range("Index out of range");
 
-        if (index == 0)
+        if (index == 0) 
         {
             Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
-            if (!tail) 
+            if (size == 0) 
             {
                 tail = newNode;
                 tail->next = tail;
@@ -115,7 +104,7 @@ public:
         }
 
         if (index == size) 
-        {
+{
             add(value);
             return;
         }
@@ -124,6 +113,7 @@ public:
         prev->next = new Node<T>(value, prev->next);
         size++;
     }
+
 
     /// <summary>
     /// Удаляет элемент из указанной позиции списка.

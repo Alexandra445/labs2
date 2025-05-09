@@ -11,80 +11,32 @@ void insertBeforeNegatives(CycleList<int>& list)
     Node<int>* prev = nullptr;
     int originalSize = list.count();
 
-    Node<int>* tail = list.head();
-    for (int i = 0; i < originalSize - 1; i++) 
-    {
-        tail = tail->next;
-    }
-
-    prev = tail;
-    int processed = 0;
-
-    while (processed < originalSize)
+    for (int i = 0; i < originalSize; ++i) 
     {
         if (current->data < 0) 
         {
-            Node<int>* newNode = new Node<int>(1, current);
-            prev->next = newNode;
-            if (prev == tail) 
-            {
-                tail = newNode;
-            }
-            prev = newNode;
-            list.insert(0, 0); 
-            list.removeAt(0);
-            processed++;
+            list.insert(i, 1);
+            current = list.head(); 
+            originalSize++;
+            i++;
         }
-        else
-        {
-            prev = current;
-            current = current->next;
-        }
-        processed++;
+        current = current->next;
     }
 }
-
-void removeNegatives(CycleList<int>& list)
+void removeNegatives(CycleList<int>& list) 
 {
     if (list.count() == 0) return;
 
-    Node<int>* current = list.head();
-    Node<int>* prev = nullptr;
-    int originalSize = list.count();
-
-    // Находим хвост
-    Node<int>* tail = list.head();
-    for (int i = 0; i < originalSize - 1; i++) 
+    int index = 0;
+    while (index < list.count())
     {
-        tail = tail->next;
-    }
-
-    prev = tail;
-    int processed = 0;
-
-    while (processed < originalSize)
-    {
-        if (current->data < 0) 
+        if (list[index] < 0) 
         {
-            Node<int>* toDelete = current;
-            prev->next = current->next;
-            current = current->next;
-
-            if (toDelete == tail)
-            {
-                tail = prev;
-            }
-
-            delete toDelete;
-            list.insert(0, 0); 
-            list.removeAt(0); 
+            list.removeAt(index);
         }
-        else
-        {
-            prev = current;
-            current = current->next;
+        else {
+            index++;
         }
-        processed++;
     }
 }
 
