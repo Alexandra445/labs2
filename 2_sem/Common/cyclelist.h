@@ -13,8 +13,8 @@ class CycleList
 private:
     Node<T>* tail;
     int size;
-    mutable Node<T>* lastaccessed;  
-    mutable int lastaccessedIndex;
+    mutable Node<T>* cachedNode;
+    mutable int recentlyAccessedNode;
 
     /// <summary>
     /// Возвращает указатель на головной узел списка (для внутренних целей).
@@ -24,30 +24,55 @@ private:
         return tail ? tail->next : nullptr;
     }
 
-   /// <summary>
-   /// Возвращает узел списка по указанному индексу.
-   /// </summary>  
+    /// <summary>
+    /// Возвращает узел списка по указанному индексу.
+    /// </summary>  
     Node<T>* getNode(int index) const
     {
         if (index < 0 || index >= size)
             throw std::out_of_range("Index out of range");
 
-        if (lastaccessed && index == lastaccessedIndex + 1)
+        // Если `cachedNode` помогает, использовать его
+        if (cachedNode && abs(index - recentlyAccessedNode) < index && abs(index - recentlyAccessedNode) < size - index)
         {
-            lastaccessed = lastaccessed->next;
-            lastaccessedIndex++;
-            return lastaccessed;
+            Node<T>* current = cachedNode;
+            int steps = index - recentlyAccessedNode;
+
+            if (steps > 0)
+            {
+                for (int i = 0; i < steps; ++i)
+                    current = current->next;
+            }
+            else { // Двигаемся назад
+                int backSteps = (-steps) + size;
+                for (int i = 0; i < backSteps; ++i)
+                    current = current->next;
+            }
+
+            cachedNode = current;
+            recentlyAccessedNode = index;
+            return current;
         }
 
-        Node<T>* current = tail ? tail->next : nullptr;
-        for (int i = 0; i < index; ++i)
+        if (index < size - index)
         {
+            Node<T>* current = head();
+
+            for (int i = 0; i < index; ++i)
+                current = current->next;
+
+            cachedNode = current;
+            recentlyAccessedNode = index;
+            return current;
+        }
+
+        Node<T>* current = tail->next;
+
+        for (int i = size - 1; i > index; --i)
             current = current->next;
-        }
 
-        lastaccessed = current;
-        lastaccessedIndex = index;
-
+        cachedNode = current;
+        recentlyAccessedNode = index;
         return current;
     }
 
@@ -55,7 +80,7 @@ public:
     /// <summary>
     /// Конструктор по умолчанию. Создает пустой список.
     /// </summary>
-    CycleList() : tail(nullptr), size(0), lastaccessed(nullptr), lastaccessedIndex(-1)
+    CycleList() : tail(nullptr), size(0), cachedNode(nullptr), recentlyAccessedNode(-1)
     {
     }
 
@@ -65,18 +90,6 @@ public:
     ~CycleList()
     {
         clear();
-    }
-
-    /// <summary>
-    /// Возвращает данные головного узла списка.
-    /// </summary>
-    /// <returns>Данные головного узла списка.</returns>
-    T headData() const
-    {
-        if (!tail) // Если список пуст
-            throw std::out_of_range("List is empty.");
-
-        return tail->next->data; 
     }
 
     /// <summary>
@@ -91,14 +104,13 @@ public:
             tail = newNode;
             tail->next = tail;
         }
-        else 
+        else
         {
             newNode->next = tail->next;
             tail->next = newNode;
             tail = newNode;
         }
         size++;
-        lastaccessed = nullptr;
     }
 
     /// <summary>
@@ -106,15 +118,15 @@ public:
     /// </summary>
     /// <param name="index">Индекс позиции для вставки (начиная с 0).</param>
     /// <param name="value">Значение для вставки.</param>
-    void insert(int index, T value) 
+    void insert(int index, T value)
     {
         if (index < 0 || index > size)
             throw std::out_of_range("Index out of range");
 
-        if (index == 0) 
+        if (index == 0)
         {
             Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
-            if (size == 0) 
+            if (size == 0)
             {
                 tail = newNode;
                 tail->next = tail;
@@ -128,8 +140,8 @@ public:
             return;
         }
 
-        if (index == size) 
-{
+        if (index == size)
+        {
             add(value);
             return;
         }
@@ -137,7 +149,6 @@ public:
         Node<T>* prev = getNode(index - 1);
         prev->next = new Node<T>(value, prev->next);
         size++;
-        lastaccessed = nullptr;
     }
 
 
@@ -149,7 +160,7 @@ public:
     {
         if (index < 0 || index >= size) throw std::out_of_range("Index out of range");
 
-        if (index == 0) 
+        if (index == 0)
         {
             Node<T>* temp = tail->next;
             if (size == 1)
@@ -174,7 +185,6 @@ public:
             delete temp;
         }
         size--;
-        lastaccessed = nullptr;
     }
 
     /// <summary>
@@ -213,12 +223,12 @@ public:
         }
         return count;
     }
-   
+
     /// <summary>
     /// Удаляет все элементы из списка.
     /// </summary>
     //
-    void clear() 
+    void clear()
     {
         while (size > 0)
         {
