@@ -7,20 +7,15 @@ void insertBeforeNegatives(CycleList<int>& list)
 {
     if (list.count() == 0) return;
 
-    Node<int>* current = list.head();
-    Node<int>* prev = nullptr;
     int originalSize = list.count();
 
-    for (int i = 0; i < originalSize; ++i) 
+    for (int i = 0; i < originalSize; ++i)
     {
-        if (current->data < 0) 
+        if (list[i] < 0)
         {
             list.insert(i, 1);
-            current = list.head(); 
-            originalSize++;
-            i++;
+            ++i; 
         }
-        current = current->next;
     }
 }
 void removeNegatives(CycleList<int>& list) 

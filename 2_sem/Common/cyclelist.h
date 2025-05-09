@@ -13,29 +13,51 @@ class CycleList
 private:
     Node<T>* tail;
     int size;
+    mutable Node<T>* lastaccessed;  
+    mutable int lastaccessedIndex;
+
+    /// <summary>
+    /// Возвращает указатель на головной узел списка (для внутренних целей).
+    /// </summary>
+    Node<T>* head() const
+    {
+        return tail ? tail->next : nullptr;
+    }
 
    /// <summary>
    /// Возвращает узел списка по указанному индексу.
    /// </summary>  
-    Node<T>* getNode(int index) const 
+    Node<T>* getNode(int index) const
     {
         if (index < 0 || index >= size)
             throw std::out_of_range("Index out of range");
 
-        Node<T>* current = tail->next;
-        for (int i = 0; i < index; ++i) 
+        if (lastaccessed && index == lastaccessedIndex + 1)
+        {
+            lastaccessed = lastaccessed->next;
+            lastaccessedIndex++;
+            return lastaccessed;
+        }
+
+        Node<T>* current = tail ? tail->next : nullptr;
+        for (int i = 0; i < index; ++i)
         {
             current = current->next;
         }
+
+        lastaccessed = current;
+        lastaccessedIndex = index;
+
         return current;
     }
+
    
 
 public:
     /// <summary>
     /// Конструктор по умолчанию. Создает пустой список.
     /// </summary>
-    CycleList() : tail(nullptr), size(0)
+    CycleList() : tail(nullptr), size(0), lastaccessed(nullptr), lastaccessedIndex(-1)
     {
     }
 
@@ -48,11 +70,15 @@ public:
     }
 
     /// <summary>
-   /// Возвращает указатель на головной узел циклического списка.
-   /// </summary>
-    Node<T>* head() const 
+    /// Возвращает данные головного узла списка.
+    /// </summary>
+    /// <returns>Данные головного узла списка.</returns>
+    T headData() const
     {
-        return tail ? tail->next : nullptr;
+        if (!tail) // Если список пуст
+            throw std::out_of_range("List is empty.");
+
+        return tail->next->data; 
     }
 
     /// <summary>
@@ -74,6 +100,7 @@ public:
             tail = newNode;
         }
         size++;
+        lastaccessed = nullptr;
     }
 
     /// <summary>
@@ -112,6 +139,7 @@ public:
         Node<T>* prev = getNode(index - 1);
         prev->next = new Node<T>(value, prev->next);
         size++;
+        lastaccessed = nullptr;
     }
 
 
@@ -148,6 +176,7 @@ public:
             delete temp;
         }
         size--;
+        lastaccessed = nullptr;
     }
 
     /// <summary>
