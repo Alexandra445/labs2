@@ -25,6 +25,15 @@ private:
     }
 
     /// <summary>
+    /// Сбрасывает кэш последнего обращённого узла и его индекс, чтобы обеспечить корректную работу после изменений в списке.
+    /// </summary>
+    void invalidateCache()
+    {
+        cachedNode = nullptr;
+        recentlyAccessedNode = -1;
+    }
+
+    /// <summary>
     /// Возвращает узел списка по указанному индексу.
     /// </summary>  
     Node<T>* getNode(int index) const
@@ -32,47 +41,26 @@ private:
         if (index < 0 || index >= size)
             throw std::out_of_range("Index out of range");
 
-        // Если `cachedNode` помогает, использовать его
-        if (cachedNode && abs(index - recentlyAccessedNode) < index && abs(index - recentlyAccessedNode) < size - index)
+        Node<T>* current;
+        int startIndex;
+
+        if (cachedNode != nullptr && abs(index - recentlyAccessedNode) < index)
         {
-            Node<T>* current = cachedNode;
-            int steps = index - recentlyAccessedNode;
-
-            if (steps > 0)
-            {
-                for (int i = 0; i < steps; ++i)
-                    current = current->next;
-            }
-            else { // Двигаемся назад
-                int backSteps = (-steps) + size;
-                for (int i = 0; i < backSteps; ++i)
-                    current = current->next;
-            }
-
-            cachedNode = current;
-            recentlyAccessedNode = index;
-            return current;
+            current = cachedNode;
+            startIndex = recentlyAccessedNode;
+        }
+        else
+        {
+            current = head();
+            startIndex = 0;
         }
 
-        if (index < size - index)
-        {
-            Node<T>* current = head();
-
-            for (int i = 0; i < index; ++i)
-                current = current->next;
-
-            cachedNode = current;
-            recentlyAccessedNode = index;
-            return current;
-        }
-
-        Node<T>* current = tail->next;
-
-        for (int i = size - 1; i > index; --i)
+        for (int i = startIndex; i < index; ++i)
             current = current->next;
 
         cachedNode = current;
         recentlyAccessedNode = index;
+
         return current;
     }
 
@@ -111,6 +99,7 @@ public:
             tail = newNode;
         }
         size++;
+        invalidateCache();
     }
 
     /// <summary>
@@ -149,6 +138,7 @@ public:
         Node<T>* prev = getNode(index - 1);
         prev->next = new Node<T>(value, prev->next);
         size++;
+        invalidateCache();
     }
 
 
@@ -185,6 +175,7 @@ public:
             delete temp;
         }
         size--;
+        invalidateCache();
     }
 
     /// <summary>
@@ -234,5 +225,6 @@ public:
         {
             removeAt(0);
         }
+        invalidateCache();
     }
 };
