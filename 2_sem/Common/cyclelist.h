@@ -36,30 +36,18 @@ private:
     /// <summary>
     /// Возвращает узел списка по указанному индексу.
     /// </summary>  
-    Node<T>* getNode(int index) const
+    Node<T>* getNode(int index) const 
     {
-        if (index < 0 || index >= size)
-            throw std::out_of_range("Index out of range");
-
-        Node<T>* current;
-        int startIndex;
-
-        if (cachedNode != nullptr && abs(index - recentlyAccessedNode) < index)
+        if (index < 0 || index >= size) 
         {
-            current = cachedNode;
-            startIndex = recentlyAccessedNode;
-        }
-        else
-        {
-            current = head();
-            startIndex = 0;
+            return nullptr; 
         }
 
-        for (int i = startIndex; i < index; ++i)
+        Node<T>* current = head();
+        for (int i = 0; i < index; ++i)
+        {
             current = current->next;
-
-        cachedNode = current;
-        recentlyAccessedNode = index;
+        }
 
         return current;
     }
@@ -84,10 +72,11 @@ public:
     /// Добавляет элемент в конец списка.
     /// </summary>
     /// <param name="value">Значение для добавления.</param>
-    void add(T value)
+    void add(const T& value)
     {
         Node<T>* newNode = new Node<T>(value);
-        if (size == 0)
+
+        if (!tail)
         {
             tail = newNode;
             tail->next = tail;
@@ -98,9 +87,9 @@ public:
             tail->next = newNode;
             tail = newNode;
         }
-        size++;
-        invalidateCache();
+        ++size;
     }
+
 
     /// <summary>
     /// Вставляет элемент в указанную позицию списка.
@@ -112,10 +101,16 @@ public:
         if (index < 0 || index > size)
             throw std::out_of_range("Index out of range");
 
+        if (index == size)
+        {
+            add(value);
+            return;
+        }
+
         if (index == 0)
         {
             Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
-            if (size == 0)
+            if (!tail)
             {
                 tail = newNode;
                 tail->next = tail;
@@ -125,20 +120,19 @@ public:
                 newNode->next = tail->next;
                 tail->next = newNode;
             }
-            size++;
-            return;
-        }
+            ++size;
 
-        if (index == size)
-        {
-            add(value);
+            if (recentlyAccessedNode != -1)
+            {
+                ++recentlyAccessedNode;
+            }
+
             return;
         }
 
         Node<T>* prev = getNode(index - 1);
         prev->next = new Node<T>(value, prev->next);
-        size++;
-        invalidateCache();
+        ++size;
     }
 
 
@@ -148,7 +142,8 @@ public:
     /// <param name="index">Индекс позиции для удаления (начиная с 0).</param>
     void removeAt(int index)
     {
-        if (index < 0 || index >= size) throw std::out_of_range("Index out of range");
+        if (index < 0 || index >= size)
+            throw std::out_of_range("Index out of range");
 
         if (index == 0)
         {
@@ -162,6 +157,19 @@ public:
                 tail->next = temp->next;
             }
             delete temp;
+
+            if (recentlyAccessedNode != -1)
+            {
+                if (recentlyAccessedNode == 0)
+                {
+                    cachedNode = nullptr;
+                    recentlyAccessedNode = -1;
+                }
+                else
+                {
+                    --recentlyAccessedNode;
+                }
+            }
         }
         else
         {
@@ -173,9 +181,18 @@ public:
                 tail = prev;
             }
             delete temp;
+
+            if (recentlyAccessedNode == index)
+            {
+                cachedNode = nullptr;
+                recentlyAccessedNode = -1;
+            }
+            else if (recentlyAccessedNode > index)
+            {
+                --recentlyAccessedNode;
+            }
         }
-        size--;
-        invalidateCache();
+        --size;
     }
 
     /// <summary>

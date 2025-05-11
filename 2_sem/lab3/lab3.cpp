@@ -5,11 +5,7 @@ using namespace std;
 
 void insertBeforeNegatives(CycleList<int>& list) 
 {
-    if (list.count() == 0) return;
-
-    int originalSize = list.count();
-
-    for (int i = 0; i < originalSize; ++i)
+    for (int i = 0; i < list.count(); ++i)
     {
         if (list[i] < 0)
         {
