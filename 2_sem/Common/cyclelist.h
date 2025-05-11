@@ -13,8 +13,6 @@ class CycleList
 private:
     Node<T>* tail;
     int size;
-    mutable Node<T>* cachedNode;
-    mutable int recentlyAccessedNode;
 
     /// <summary>
     /// Возвращает указатель на головной узел списка (для внутренних целей).
@@ -22,15 +20,6 @@ private:
     Node<T>* head() const
     {
         return tail ? tail->next : nullptr;
-    }
-
-    /// <summary>
-    /// Сбрасывает кэш последнего обращённого узла и его индекс, чтобы обеспечить корректную работу после изменений в списке.
-    /// </summary>
-    void invalidateCache()
-    {
-        cachedNode = nullptr;
-        recentlyAccessedNode = -1;
     }
 
     /// <summary>
@@ -56,7 +45,7 @@ public:
     /// <summary>
     /// Конструктор по умолчанию. Создает пустой список.
     /// </summary>
-    CycleList() : tail(nullptr), size(0), cachedNode(nullptr), recentlyAccessedNode(-1)
+    CycleList() : tail(nullptr), size(0)
     {
     }
 
@@ -121,12 +110,6 @@ public:
                 tail->next = newNode;
             }
             ++size;
-
-            if (recentlyAccessedNode != -1)
-            {
-                ++recentlyAccessedNode;
-            }
-
             return;
         }
 
@@ -156,20 +139,6 @@ public:
             {
                 tail->next = temp->next;
             }
-            delete temp;
-
-            if (recentlyAccessedNode != -1)
-            {
-                if (recentlyAccessedNode == 0)
-                {
-                    cachedNode = nullptr;
-                    recentlyAccessedNode = -1;
-                }
-                else
-                {
-                    --recentlyAccessedNode;
-                }
-            }
         }
         else
         {
@@ -181,16 +150,6 @@ public:
                 tail = prev;
             }
             delete temp;
-
-            if (recentlyAccessedNode == index)
-            {
-                cachedNode = nullptr;
-                recentlyAccessedNode = -1;
-            }
-            else if (recentlyAccessedNode > index)
-            {
-                --recentlyAccessedNode;
-            }
         }
         --size;
     }
@@ -242,6 +201,5 @@ public:
         {
             removeAt(0);
         }
-        invalidateCache();
     }
 };
