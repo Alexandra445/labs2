@@ -13,6 +13,8 @@ class CycleList
 private:
     Node<T>* tail;
     int size;
+    mutable Node<T>* cachedNode;
+    mutable int recentlyAccessedNode;
 
     /// <summary>
     /// Возвращает указатель на головной узел списка (для внутренних целей).
@@ -25,18 +27,32 @@ private:
     /// <summary>
     /// Возвращает узел списка по указанному индексу.
     /// </summary>  
-    Node<T>* getNode(int index) const 
+    Node<T>* getNode(int index) const
     {
-        if (index < 0 || index >= size) 
+        if (index < 0 || index >= size)
+            throw std::out_of_range("Index out of range");
+
+        Node<T>* current;
+        int startIndex;
+
+        if (cachedNode != nullptr && (index - recentlyAccessedNode + size) % size < size / 2)
         {
-            return nullptr; 
+            current = cachedNode;
+            startIndex = recentlyAccessedNode;
+        }
+        else
+        {
+            current = head();
+            startIndex = 0;
         }
 
-        Node<T>* current = head();
-        for (int i = 0; i < index; ++i)
+        for (int i = startIndex; i != index; ++i)
         {
             current = current->next;
         }
+
+        cachedNode = current;
+        recentlyAccessedNode = index;
 
         return current;
     }
@@ -45,7 +61,7 @@ public:
     /// <summary>
     /// Конструктор по умолчанию. Создает пустой список.
     /// </summary>
-    CycleList() : tail(nullptr), size(0)
+    CycleList() : tail(nullptr), size(0), cachedNode(nullptr), recentlyAccessedNode(-1)
     {
     }
 
@@ -64,8 +80,7 @@ public:
     void add(const T& value)
     {
         Node<T>* newNode = new Node<T>(value);
-
-        if (!tail)
+        if (size == 0)
         {
             tail = newNode;
             tail->next = tail;
@@ -76,130 +91,160 @@ public:
             tail->next = newNode;
             tail = newNode;
         }
-        ++size;
+        if (cachedNode != nullptr)
+        {
+            if (recentlyAccessedNode == size - 1)
+            {
+                cachedNode = newNode;
+                recentlyAccessedNode = size;
+            }
+            size++;
+        }
     }
 
 
-    /// <summary>
-    /// Вставляет элемент в указанную позицию списка.
-    /// </summary>
-    /// <param name="index">Индекс позиции для вставки (начиная с 0).</param>
-    /// <param name="value">Значение для вставки.</param>
-    void insert(int index, T value)
-    {
-        if (index < 0 || index > size)
-            throw std::out_of_range("Index out of range");
-
-        if (index == size)
+        /// <summary>
+        /// Вставляет элемент в указанную позицию списка.
+        /// </summary>
+        /// <param name="index">Индекс позиции для вставки (начиная с 0).</param>
+        /// <param name="value">Значение для вставки.</param>
+        void insert(int index, T value)
         {
-            add(value);
-            return;
-        }
+            if (index < 0 || index > size)
+                throw std::out_of_range("Index out of range");
 
-        if (index == 0)
-        {
-            Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
-            if (!tail)
+            if (index == size)
             {
-                tail = newNode;
-                tail->next = tail;
+                add(value);
+                return;
             }
-            else
+
+            if (index == 0)
             {
-                newNode->next = tail->next;
-                tail->next = newNode;
+                Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
+                if (!tail)
+                {
+                    tail = newNode;
+                    tail->next = tail;
+                }
+                else
+                {
+                    newNode->next = tail->next;
+                    tail->next = newNode;
+                }
+                if (cachedNode != nullptr && recentlyAccessedNode == 0)
+                {
+                    cachedNode = newNode;
+                }
+                ++size;
+                return;
             }
-            ++size;
-            return;
-        }
 
-        Node<T>* prev = getNode(index - 1);
-        prev->next = new Node<T>(value, prev->next);
-        ++size;
-    }
-
-
-    /// <summary>
-    /// Удаляет элемент из указанной позиции списка.
-    /// </summary>
-    /// <param name="index">Индекс позиции для удаления (начиная с 0).</param>
-    void removeAt(int index)
-    {
-        if (index < 0 || index >= size)
-            throw std::out_of_range("Index out of range");
-
-        if (index == 0)
-        {
-            Node<T>* temp = tail->next;
-            if (size == 1)
-            {
-                tail = nullptr;
-            }
-            else
-            {
-                tail->next = temp->next;
-            }
-        }
-        else
-        {
             Node<T>* prev = getNode(index - 1);
-            Node<T>* temp = prev->next;
-            prev->next = temp->next;
-            if (index == size - 1)
+            prev->next = new Node<T>(value, prev->next);
+            if (cachedNode != nullptr && recentlyAccessedNode >= index)
             {
-                tail = prev;
+                recentlyAccessedNode++;
             }
-            delete temp;
+            size++;
         }
-        --size;
-    }
 
-    /// <summary>
-    /// Оператор индексации для доступа к элементам списка.
-    /// </summary>
-    /// <param name="index">Индекс элемента (начиная с 0).</param>
-    /// <returns>Ссылка на элемент по указанному индексу.</returns>
-    T& operator[](const int index)
-    {
-        return getNode(index)->data;
-    }
 
-    /// <summary>
-    /// Возвращает количество элементов в списке.
-    /// </summary>
-    /// <returns>Число элементов в списке.</returns>
-    int count() const
-    {
-        return size;
-    }
-
-    /// <summary>
-    /// Подсчитывает количество вхождений указанного значения в список.
-    /// </summary>
-    /// <param name="value">Значение для поиска.</param>
-    /// <returns>Количество найденных вхождений.</returns>
-    int count(T value) const
-    {
-        if (size == 0) return 0;
-        int count = 0;
-        Node<T>* current = head();
-        for (int i = 0; i < size; i++)
+        /// <summary>
+        /// Удаляет элемент из указанной позиции списка.
+        /// </summary>
+        /// <param name="index">Индекс позиции для удаления (начиная с 0).</param>
+        void removeAt(int index)
         {
-            if (current->data == value) count++;
-            current = current->next;
-        }
-        return count;
-    }
+            if (index < 0 || index >= size)
+                throw std::out_of_range("Index out of range");
 
-    /// <summary>
-    /// Удаляет все элементы из списка.
-    /// </summary>
-    //
-    void clear()
-    {
-        while (size > 0)
-        {
-            removeAt(0);
+            if (index == 0)
+            {
+                Node<T>* temp = tail->next;
+                if (size == 1)
+                {
+                    tail = nullptr;
+                }
+                else
+                {
+                    tail->next = temp->next;
+                }
+                delete temp;
+            }
+            else
+            {
+                Node<T>* prev = getNode(index - 1);
+                Node<T>* temp = prev->next;
+                prev->next = temp->next;
+                if (index == size - 1)
+                {
+                    tail = prev;
+                }
+                if (cachedNode == temp)
+                {
+                    cachedNode = nullptr;
+                    recentlyAccessedNode = -1;
+                }
+                if (cachedNode != nullptr && recentlyAccessedNode > index)
+                {
+                    recentlyAccessedNode--;
+                }
+                if (index == size - 1)
+                {
+                    tail = prev;
+                }
+                delete temp;
+            }
+            --size;
         }
-    }
-};
+
+        /// <summary>
+        /// Оператор индексации для доступа к элементам списка.
+        /// </summary>
+        /// <param name="index">Индекс элемента (начиная с 0).</param>
+        /// <returns>Ссылка на элемент по указанному индексу.</returns>
+        T& operator[](const int index)
+        {
+            return getNode(index)->data;
+        }
+
+        /// <summary>
+        /// Возвращает количество элементов в списке.
+        /// </summary>
+        /// <returns>Число элементов в списке.</returns>
+        int count() const
+        {
+            return size;
+        }
+
+        /// <summary>
+        /// Подсчитывает количество вхождений указанного значения в список.
+        /// </summary>
+        /// <param name="value">Значение для поиска.</param>
+        /// <returns>Количество найденных вхождений.</returns>
+        int count(T value) const
+        {
+            if (size == 0) return 0;
+            int count = 0;
+            Node<T>* current = head();
+            for (int i = 0; i < size; i++)
+            {
+                if (current->data == value) count++;
+                current = current->next;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Удаляет все элементы из списка.
+        /// </summary>
+        //
+        void clear()
+        {
+            while (size > 0)
+            {
+                removeAt(0);
+            }
+        }
+    };
