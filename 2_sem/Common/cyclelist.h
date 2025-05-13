@@ -91,15 +91,12 @@ public:
             tail->next = newNode;
             tail = newNode;
         }
-        if (cachedNode != nullptr)
+        if (cachedNode != nullptr && recentlyAccessedNode == size - 1)
         {
-            if (recentlyAccessedNode == size - 1)
-            {
-                cachedNode = newNode;
-                recentlyAccessedNode = size;
-            }
-            size++;
+            cachedNode = newNode;
+            recentlyAccessedNode = size;
         }
+        size++;
     }
 
 
@@ -119,9 +116,10 @@ public:
                 return;
             }
 
-            if (index == 0)
+            Node<T>* newNode = nullptr;
+            if (index == 0) 
             {
-                Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
+                newNode = new Node<T>(value, tail ? tail->next : nullptr);
                 if (!tail)
                 {
                     tail = newNode;
@@ -129,23 +127,21 @@ public:
                 }
                 else
                 {
-                    newNode->next = tail->next;
                     tail->next = newNode;
                 }
-                if (cachedNode != nullptr && recentlyAccessedNode == 0)
-                {
-                    cachedNode = newNode;
-                }
-                ++size;
-                return;
+            }
+            else
+            {
+                Node<T>* prev = getNode(index - 1);
+                newNode = new Node<T>(value, prev->next);
+                prev->next = newNode;
             }
 
-            Node<T>* prev = getNode(index - 1);
-            prev->next = new Node<T>(value, prev->next);
             if (cachedNode != nullptr && recentlyAccessedNode >= index)
             {
                 recentlyAccessedNode++;
             }
+
             size++;
         }
 
@@ -159,7 +155,7 @@ public:
             if (index < 0 || index >= size)
                 throw std::out_of_range("Index out of range");
 
-            if (index == 0)
+            if (index == 0) 
             {
                 Node<T>* temp = tail->next;
                 if (size == 1)
@@ -170,6 +166,11 @@ public:
                 {
                     tail->next = temp->next;
                 }
+                if (cachedNode == temp)
+                {
+                    cachedNode = nullptr;
+                    recentlyAccessedNode = -1;
+                }
                 delete temp;
             }
             else
@@ -177,6 +178,7 @@ public:
                 Node<T>* prev = getNode(index - 1);
                 Node<T>* temp = prev->next;
                 prev->next = temp->next;
+
                 if (index == size - 1)
                 {
                     tail = prev;
@@ -186,17 +188,9 @@ public:
                     cachedNode = nullptr;
                     recentlyAccessedNode = -1;
                 }
-                if (cachedNode != nullptr && recentlyAccessedNode > index)
-                {
-                    recentlyAccessedNode--;
-                }
-                if (index == size - 1)
-                {
-                    tail = prev;
-                }
                 delete temp;
             }
-            --size;
+            size--;
         }
 
         /// <summary>
@@ -246,5 +240,10 @@ public:
             {
                 removeAt(0);
             }
+            cachedNode = nullptr;
+            recentlyAccessedNode = -1;
+
+            tail = nullptr;
+            size = 0;
         }
     };
