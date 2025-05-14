@@ -91,11 +91,10 @@ public:
             tail->next = newNode;
             tail = newNode;
         }
-        if (cachedNode != nullptr && recentlyAccessedNode == size - 1)
-        {
-            cachedNode = newNode;
-            recentlyAccessedNode = size;
-        }
+
+        cachedNode = newNode;
+        recentlyAccessedNode = size;
+
         size++;
     }
 
@@ -110,36 +109,32 @@ public:
             if (index < 0 || index > size)
                 throw std::out_of_range("Index out of range");
 
-            if (index == size)
+            if (index == 0)
             {
-                add(value);
-                return;
-            }
-
-            Node<T>* newNode = nullptr;
-            if (index == 0) 
-            {
-                newNode = new Node<T>(value, tail ? tail->next : nullptr);
-                if (!tail)
+                Node<T>* newNode = new Node<T>(value, tail ? tail->next : nullptr);
+                if (size == 0)
                 {
                     tail = newNode;
-                    tail->next = tail;
+                    tail->next = tail;  
                 }
                 else
                 {
                     tail->next = newNode;
                 }
+
+                cachedNode = newNode;
+                recentlyAccessedNode = 0;
             }
             else
             {
                 Node<T>* prev = getNode(index - 1);
-                newNode = new Node<T>(value, prev->next);
+                Node<T>* newNode = new Node<T>(value, prev->next);
                 prev->next = newNode;
-            }
 
-            if (cachedNode != nullptr && recentlyAccessedNode >= index)
-            {
-                recentlyAccessedNode++;
+                if (cachedNode != nullptr && recentlyAccessedNode >= index)
+                {
+                    recentlyAccessedNode++;
+                }
             }
 
             size++;
