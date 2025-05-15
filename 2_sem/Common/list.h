@@ -1,10 +1,14 @@
-#pragma once
+п»ї#pragma once
 #include <stdexcept>
 #include <string>
 #include <algorithm>
 
 using namespace std;
 
+/// <summary>
+/// РЁР°Р±Р»РѕРЅРЅР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° СѓР·Р»Р° РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°
+/// </summary>
+/// <typeparam name="T">РўРёРї РґР°РЅРЅС‹С…, С…СЂР°РЅСЏС‰РёС…СЃСЏ РІ СѓР·Р»Рµ</typeparam>
 template <typename T>
 struct Node
 {
@@ -19,7 +23,7 @@ struct Node
 };
 
 /// <summary>
-/// Структура для хранения информации о городе
+/// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РіРѕСЂРѕРґРµ
 /// </summary>
 struct City
 {
@@ -28,7 +32,7 @@ struct City
     int population;    
 
     /// <summary>
-    /// Оператор сравнения двух городов
+    /// РћРїРµСЂР°С‚РѕСЂ СЃСЂР°РІРЅРµРЅРёСЏ РґРІСѓС… РіРѕСЂРѕРґРѕРІ
     /// </summary>
     bool operator==(const City& other) const
     {
@@ -37,9 +41,9 @@ struct City
 };
 
 /// <summary>
-/// Шаблонный класс двусвязного списка
+/// РЁР°Р±Р»РѕРЅРЅС‹Р№ РєР»Р°СЃСЃ РґРІСѓСЃРІСЏР·РЅРѕРіРѕ СЃРїРёСЃРєР°
 /// </summary>
-/// <typeparam name="T">Тип элементов списка</typeparam>
+/// <typeparam name="T">РўРёРї СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР°</typeparam>
 template <typename T>
 class List
 {
@@ -50,14 +54,14 @@ private:
 
 public:
     /// <summary>
-    /// Конструктор по умолчанию
+    /// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
     /// </summary>
     List() : head(nullptr), tail(nullptr), size(0) 
     {
     }
 
     /// <summary>
-    /// Деструктор
+    /// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
     /// </summary>
     ~List() 
     {
@@ -65,7 +69,7 @@ public:
     }
 
     /// <summary>
-    /// Добавление элемента в конец списка
+    /// Р”РѕР±Р°РІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РІ РєРѕРЅРµС† СЃРїРёСЃРєР°
     /// </summary>
     void add(T value)
     {
@@ -77,12 +81,12 @@ public:
     }
 
     /// <summary>
-    /// Вставка элемента по индексу
+    /// Р’СЃС‚Р°РІРєР° СЌР»РµРјРµРЅС‚Р° РїРѕ РёРЅРґРµРєСЃСѓ
     /// </summary>
     void insert(int index, const T& value)
     {
         if (index < 0 || index > size)
-            throw out_of_range("Индекс вне диапазона");
+            throw out_of_range("РРЅРґРµРєСЃ РІРЅРµ РґРёР°РїР°Р·РѕРЅР°");
 
         if (index == size)
         {
@@ -109,12 +113,12 @@ public:
     }
 
     /// <summary>
-    /// Удаление элемента по индексу
+    /// РЈРґР°Р»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РїРѕ РёРЅРґРµРєСЃСѓ
     /// </summary>
     void removeAt(int index) 
     {
         if (index < 0 || index >= size)
-            throw out_of_range("Индекс вне диапазона");
+            throw out_of_range("РРЅРґРµРєСЃ РІРЅРµ РґРёР°РїР°Р·РѕРЅР°");
 
         Node<T>* toDelete;
         if (index == 0) 
@@ -143,12 +147,12 @@ public:
     }
 
     /// <summary>
-    /// Доступ к элементу по индексу
+    /// Р”РѕСЃС‚СѓРї Рє СЌР»РµРјРµРЅС‚Сѓ РїРѕ РёРЅРґРµРєСЃСѓ
     /// </summary>
     T& operator[](const int index) 
     {
         if (index < 0 || index >= size)
-            throw out_of_range("Индекс вне диапазона");
+            throw out_of_range("РРЅРґРµРєСЃ РІРЅРµ РґРёР°РїР°Р·РѕРЅР°");
 
         Node<T>* current = head;
         for (int i = 0; i < index; i++) current = current->next;
@@ -156,7 +160,7 @@ public:
     }
 
     /// <summary>
-    /// Получение количества элементов
+    /// РџРѕР»СѓС‡РµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° СЌР»РµРјРµРЅС‚РѕРІ
     /// </summary>
     int count() 
     {
@@ -164,7 +168,7 @@ public:
     }
 
     /// <summary>
-    /// Подсчет вхождений значения
+    /// РџРѕРґСЃС‡РµС‚ РІС…РѕР¶РґРµРЅРёР№ Р·РЅР°С‡РµРЅРёСЏ
     /// </summary>
     int count(T value) 
     {
@@ -179,7 +183,7 @@ public:
     }
 
     /// <summary>
-    /// Очистка списка
+    /// РћС‡РёСЃС‚РєР° СЃРїРёСЃРєР°
     /// </summary>
     void clear() 
     {
