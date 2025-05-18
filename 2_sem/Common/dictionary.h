@@ -11,7 +11,9 @@ struct Pair
 {
     T key;
     V value;
-    Pair(T k, V v) : key(k), value(v) {}
+    Pair(T k, V v) : key(k), value(v)
+    {
+    }
 };
 
 /// <summary>
